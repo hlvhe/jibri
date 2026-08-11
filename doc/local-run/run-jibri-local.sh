@@ -119,6 +119,10 @@ jibri {
   }
 
   ffmpeg {
+    input-linux = [
+      "-f", "x11grab",
+      "-i", "${DISPLAY:-:0}",
+    ]
     resolution = "$JIBRI_RECORDING_RESOLUTION"
     audio-source = "$JIBRI_AUDIO_SOURCE"
     audio-device = "$JIBRI_AUDIO_DEVICE"
@@ -126,11 +130,13 @@ jibri {
   }
 
   chrome {
+    display = "${DISPLAY:-:0}"
     flags = [
       "--use-fake-ui-for-media-stream",
       "--enabled",
       "--autoplay-policy=no-user-gesture-required",
-      "--ignore-certificate-errors"
+      "--ignore-certificate-errors",
+      "--ozone-platform=x11" # Force X11, required for x11grab to capture video
     ]
   }
 
