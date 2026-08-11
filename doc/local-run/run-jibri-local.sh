@@ -108,6 +108,14 @@ EOG
 )
 fi
 
+FFMPEG_LINUX_OVERRIDES=$(cat <<EOG
+    input-linux = [
+      "-f", "x11grab",
+      "-i", "${DISPLAY:-:0}",
+    ]
+EOG
+)
+
 cat > "$JIBRI_CONF" <<EOF
 jibri {
   id = "$JIBRI_INSTANCE_ID"
@@ -119,14 +127,11 @@ jibri {
   }
 
   ffmpeg {
-    input-linux = [
-      "-f", "x11grab",
-      "-i", "${DISPLAY:-:0}",
-    ]
     resolution = "$JIBRI_RECORDING_RESOLUTION"
     audio-source = "$JIBRI_AUDIO_SOURCE"
     audio-device = "$JIBRI_AUDIO_DEVICE"
     $FFMPEG_MAC_OVERRIDES
+    $FFMPEG_LINUX_OVERRIDES
   }
 
   chrome {
