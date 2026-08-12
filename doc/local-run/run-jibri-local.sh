@@ -135,7 +135,6 @@ jibri {
   }
 
   chrome {
-    display = "${DISPLAY:-:0}"
     flags = [
       "--use-fake-ui-for-media-stream",
       "--enabled",

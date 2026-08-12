@@ -35,7 +35,6 @@ import org.jitsi.jibri.util.getLoggerWithHandler
 import org.jitsi.jibri.util.randomAlphaNum
 import org.jitsi.metaconfig.config
 import org.jitsi.metaconfig.from
-import org.jitsi.metaconfig.optionalconfig
 import org.jitsi.utils.logging2.Logger
 import org.jitsi.utils.logging2.createChildLogger
 import org.openqa.selenium.TimeoutException
@@ -104,7 +103,7 @@ data class JibriSeleniumOptions(
     /**
      * Which display selenium should be started on
      */
-    val display: String = ":0",
+    val display: String = System.getenv("DISPLAY") ?: ":0",
     /**
      * The display name that should be used for jibri.  Note that this
      * is currently only used in the sipgateway gateway scenario; when doing
@@ -183,8 +182,6 @@ class JibriSelenium(
     private val stateMachine = SeleniumStateMachine()
     private var shuttingDown = AtomicBoolean(false)
     private val chromeOpts: List<String> by config("jibri.chrome.flags".from(Config.configSource))
-    private val configuredChromeDisplay: String? by optionalconfig("jibri.chrome.display".from(Config.configSource))
-    private val chromeDisplay: String = configuredChromeDisplay ?: jibriSeleniumOptions.display
     private var callPage: CallPage
 
     /**
@@ -208,7 +205,7 @@ class JibriSelenium(
         chromeOptions.addArguments(chromeOpts)
         chromeOptions.addArguments(jibriSeleniumOptions.extraChromeCommandLineFlags)
         val chromeDriverService = ChromeDriverService.Builder()
-            .withEnvironment(mapOf("DISPLAY" to chromeDisplay))
+            .withEnvironment(mapOf("DISPLAY" to jibriSeleniumOptions.display))
             .withLogFile(chromeDriverLogFile)
             .build()
         val logPrefs = LoggingPreferences()
