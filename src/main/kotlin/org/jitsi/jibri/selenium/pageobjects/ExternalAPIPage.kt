@@ -159,15 +159,15 @@ class ExternalAPIPage(driver: RemoteWebDriver) : AbstractPageObject(driver), Cal
         return success
     }
 
-    private fun executeRecorderCommand(command: String, arg: Any? = null): Boolean {
+    private fun executeRecorderCommand(command: String, vararg args: Any?): Boolean {
         return try {
             driver.executeScript(
                 """
                 if (!window.jibriRecorderApi) return false;
-                window.jibriRecorderApi.executeCommand('$command', arguments[0]);
+                window.jibriRecorderApi.executeCommand('$command', ...arguments);
                 return true;
                 """,
-                arg
+                *args
             ) as? Boolean ?: false
         } catch (t: Throwable) {
             logger.error("Error executing recorder command $command", t)
@@ -434,7 +434,7 @@ class ExternalAPIPage(driver: RemoteWebDriver) : AbstractPageObject(driver), Cal
 
     override fun setParticipantProperties(properties: Map<String, String>): Boolean {
         return try {
-            val result = executeRecorderCommand("setParticipantProperties", properties)
+            val result = executeRecorderCommand("setParticipantProperties", properties, true)
             if (!result) {
                 logger.warn("Could not set participant properties, External API not ready")
             }
